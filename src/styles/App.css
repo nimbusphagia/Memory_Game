@@ -1,0 +1,10 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  font-family: Helvetica;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+}
