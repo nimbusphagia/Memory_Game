@@ -5,15 +5,16 @@ import './styles/board.css'
 import Scores from './components/Scores.jsx';
 import Difficulty from './components/Difficulty.jsx';
 import Board from './components/Board.jsx';
+import Popup from './components/Popup.jsx';
 
 function App() {
   const [score, setScore] = useState(0);
+  const [bestScore, setBestScore] = useState(0);
   const [diff, setDiff] = useState(0); //0=easy,1=medium,2=hard
   const [films, setFilms] = useState([]);
   const [cards, setCards] = useState([]);
   const [played, setPlayed] = useState([]);
-  const [gamestate, setGamestate] = useState(0) //0=pre-game, 1=playing, 2=won 
-  let bestScore = 0;
+  const [gamestate, setGamestate] = useState(0) // 0=playing, 1=won, 2=lost 
   //LOAD FILMS FROM API
   useEffect(() => {
     async function loadFilms() {
@@ -21,7 +22,6 @@ function App() {
         const res = await fetch("https://ghibliapi.vercel.app/films");
         const data = await res.json();
         setFilms(data);
-        console.log('API DATA:', data);
       } catch (err) {
         console.error("Connection error:", err);
       }
@@ -50,26 +50,64 @@ function App() {
       setCards(selected);
     }
     getPlayingCards();
-  }, [diff, films]);
+  }, [diff, films, gamestate]);
 
 
-  function getBestScore() {
-    if (bestScore < score) {
-      bestScore = score;
-    }
+  function reshuffleCards() {
+    setCards(prev => {
+      const copy = [...prev];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    });
+  }
+
+  function handleScore() {
+    setScore(prev => {
+      const newScore = prev + 1;
+
+      if (newScore > bestScore) {
+        setBestScore(newScore);
+      }
+
+      return newScore;
+    });
   }
   function restartGame() {
     setScore(0);
-    setDiff(0);
-    //setCards 
+    setPlayed([]);
     setGamestate(0);
   }
+
   function handleDifficulty(difficulty) {
-    if (gamestate > 0) {
-      restartGame();
-    }
+    restartGame();
+    setBestScore(0);
     setDiff(difficulty);
   }
+
+
+  function playCard(card) {
+    //  LOSE LOGIC
+    if (played.some(c => c.id === card.id)) {
+      setGamestate(2);
+      return;
+    }
+
+    //  PLAY LOGIC
+    const newPlayed = [...played, card];
+    setPlayed(newPlayed);
+    handleScore();
+
+    // WIN LOGIC 
+    if (newPlayed.length === cards.length) {
+      setGamestate(1);
+    } else {
+      reshuffleCards();
+    }
+  }
+
   return (
     <>
       <header>
@@ -88,8 +126,9 @@ function App() {
       <main>
         <Board
           cards={cards}
+          handleClick={playCard}
         />
-
+        {gamestate !== 0 && <Popup status={gamestate} restart={restartGame} />}
       </main>
     </>
   )

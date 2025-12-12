@@ -1,6 +1,43 @@
+header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0 30px;
+  background-color: var(--darkUI);
+  color: var(--primaryText);
+  margin: var(--gapMain);
+  border-radius: 8px;
+  align-items: center;
+}
+
 .Scores {
   display: flex;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 10px;
+  gap: 50px;
+  padding: 0 30px;
+  height: 80%;
+  place-self: center;
+}
+
+.scoreItem {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-size: 1.2em;
+}
+
+.difficulty {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  margin: auto;
+  gap: 25px;
+}
+
+.difficulty .btn {
+  padding: 5px 15px;
+  font-size: 1.15em;
+  color: white;
 }
