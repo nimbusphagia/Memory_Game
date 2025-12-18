@@ -1,7 +1,13 @@
+h1,
+h2,
+h3 {
+  margin: 0
+}
+
 header {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  padding: 0 30px;
+  padding: 10px 30px;
   background-color: var(--darkUI);
   color: var(--primaryText);
   margin: var(--gapMain);
